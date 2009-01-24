@@ -1,0 +1,7 @@
+#Sat Jan 24 20:50:35 JST 2009
+eclipse.preferences.version=1
+exportKeyStore=twair.p12
+exportPackList=application.xml;icons;twair.html;TwittAir.css;image;
+exportPackageName=twair.air
+exportStorePass=basyura
+exportStoreType=pkcs12

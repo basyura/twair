@@ -1,0 +1,65 @@
+body {
+	margin:0;
+	background-image: url("image/bg.gif"); 
+}
+.control_table {
+	width:100%;
+	height:25;
+}
+#btn_reload {
+	font-size:8pt;
+}
+#btn_openInput {
+  font-size:8pt;
+  margin-left:-10;
+}
+#btn_showTweets {
+	font-size:8pt;
+	margin-left:-10;
+}
+#btn_showReplies {
+	font-size:8pt;
+	margin-left:-10;
+}
+#btn_postMessage {
+	width:100%;
+}
+#top_msg {
+	font-size:8pt;
+}	
+#main{
+	height:90%;
+}
+#contents {
+	height:100%;
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+#replies {
+	height:100%;
+	overflow-y:scroll;
+	overflow-x:hidden;
+	display:none;
+}
+#input_area {
+	display:none;
+	width:95%;
+	background-color:#F0F0F0;
+	padding:3;
+	position:absolute;
+	top:0;
+	border:2px solid #0080FF;
+}
+#input_text {
+	width:100%;
+	height:50;
+	font-size:10pt;
+}
+#message {
+	display:none;
+	position:absolute;
+	top:25;
+	left:5;
+	background-color:#0080FF;
+	color:#FFFFFF;
+}

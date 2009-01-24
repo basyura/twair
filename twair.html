@@ -1,0 +1,33 @@
+<html>
+<head>
+	<script src="AIRAliases.js"   type="text/javascript"></script>
+	<script src="jquery-1.2.6.js" type="text/javascript"></script>
+	<script src="twair.js"        type="text/javascript"></script>
+	<link rel="stylesheet"        type="text/css" href="twair.css">
+	<title>twair</title>
+</head>
+<body onload="initialize()">
+<table class="control_table" cellpadding="0" cellspacing="0" border="0">
+	<tr>
+		<td>
+			<input type="button" id="btn_reload"    value="RELOAD">
+			<input type="button" id="btn_openInput" value="TWIT">
+		</td>
+		<td align="right">
+			<input type="button" id="btn_showTweets"  value="T">
+			<input type="button" id="btn_showReplies" value="R">
+			<input type="checkbox" id="ck_inFront"><span id="top_msg">top</span>
+		</td>
+	</tr>
+</table>
+<div id="main">
+	<div id="contents"></div>
+	<div id="replies"></div>
+</div>
+<div id="input_area" align="center">
+	<textarea id="input_text"></textarea>
+	<input type="button" value="post" id="btn_postMessage">
+</div>
+<span id="message"></span>
+</body>
+</html>
