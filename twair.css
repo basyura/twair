@@ -23,6 +23,7 @@ body {
 }
 #btn_postMessage {
 	width:100%;
+  font-size:10pt;
 }
 #top_msg {
 	font-size:8pt;

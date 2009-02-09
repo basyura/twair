@@ -1,20 +1,16 @@
-// ついった
+/*
+ * - Twair -
+ *
+ */
 var TWITTER_LAST = 0;
-var WASSR_LAST   = 0;
 var LOG_LIMIT    = 100;
 
-var TYPE = {"TWITTER":0 , "WASSR":1};
+var TYPE = {"TWITTER":0};
 var CONFIG = null;
 var FRIENDS_TIMELINE_API = 'http://twitter.com/statuses/friends_timeline.json';
-//var FRIENDS_TIMELINE_API = 'http://localhost:3000';
-//var POST_API = 'http://localhost:3000';
 var TWITTER_POST_API     = 'http://twitter.com/statuses/update.json';
-var TWITTER_VERIFY_API   = 'http://twitter.com/account/verify_credentials.json';
 var TWITTER_REPLIES_API  = "http://twitter.com/statuses/replies.json";
 var TWITTER_FAVORITE_API = "http://twitter.com/favourings/create/";
-
-var WASSR_TIMELINE_API   = "http://api.wassr.jp/statuses/friends_timeline.json";
-var WASSR_POST_API       = "http://api.wassr.jp/statuses/update.json";
 
 var CACHE = [];
 
@@ -24,7 +20,6 @@ function initialize() {
 		reload();
 		setInterval("reload()" , 60 * 1000);
 		setInterval("reload_replies()" , 5 * 60 * 1000);
-		// attach events
 		$("#btn_showTweets").click(function() {
 			$("#contents").show();
 			$("#replies").hide();
@@ -45,10 +40,7 @@ function initialize() {
 			} catch(e) {
 				alert(e);
 			}
-			
 		}); 
-
-
 	} catch(e) {
 		alert(e.message);
 	}
@@ -78,31 +70,6 @@ function configure() {
 		alert("error at congifure : " + e.message);
 	}
 }
-function verify() {
-	notifyMessage("login ...");
-	try {
-		var httpRequest = new XMLHttpRequest();
-		alert(CONFIG.id + "_" + CONFIG.password);
-		httpRequest.open('GET', TWITTER_VERIFY_API , true , CONFIG.id , CONFIG.password);
-		httpRequest.onreadystatechange 
-			= (function(httpRequest){return function(){
-				if(httpRequest.readyState == 4) {
-					if(httpRequest.status == 200) {
-						notifyMessage("login success ...");
-						alert(httpRequest.responseText);
-						alert(httpRequest.getAllResponseHeaders());
-					}
-					else {
-						alert("login error");
-					}
-				}
-			  }})(httpRequest);
-		httpRequest.send(null);
-
-	} catch(e) {
-		notifyMessage("login error ...");
-	}
-}
 function initialize_system_tray() {
 	// アイコンファイルをアサインする  
 	var loader = new air.Loader();  
@@ -115,21 +82,7 @@ function initialize_system_tray() {
 			});  
 }
 function reload(flg) {
-
-	/*
-	var options = new air.NativeWindowInitOptions(); 
-	options.systemChrome = "none"; 
-	options.type = "lightweight"; 
-	 
-	var windowBounds = new air.Rectangle(200,250,300,400); 
-	newHTMLLoader = air.HTMLLoader.createRootWindow(true, options, true, windowBounds); 
-	newHTMLLoader.load(new air.URLRequest("about:blank"));
-	*/
-
-
-
 	reload_twitter(flg);
-	//reload_wassr(flg);
 	reload_replies();
 }
 function reload_twitter(flg) {
@@ -148,51 +101,24 @@ function reload_twitter(flg) {
 		}
 	});
 }
-function reload_wassr(flg) {
-	if(flg != undefined && !flg) {
-		return;
-	}
-	notifyMessage("reload ..." , -1);
-	$.ajax({
-		type:     "POST",
-		url:      WASSR_TIMELINE_API,
-		data:     "id=" + CONFIG.id,
-		dataType: "text",
-		complete: function(request , status) {
-			load(request.responseText , TYPE.WASSR);
-		}
-	});
-}
 function load(text , type) {
 	try {
 		notifyMessage("loading ...");
 		var json = eval(text);
 		var latest = [];
 		for(var i = 0 ; i < json.length ; i ++) {
-			if(type == TYPE.TWITTER) {
-				if(TWITTER_LAST != json[i].id){ latest.push(new Tweet(json[i])); }
-				else { break; }
-			}
-			else {
-				if(WASSR_LAST != json[i].id){ latest.push(new Wass(json[i])); }
-				else { break; }
-			}
+			if(TWITTER_LAST != json[i].id){ latest.push(new Tweet(json[i])); }
+			else { break; }
 		}
 
 		CACHE = latest.concat(CACHE);
-		
 		while(CACHE.length > LOG_LIMIT) {
 			CACHE.pop();
 		}
 
 		var info = new Table(CACHE , {"id":"tweets" , "expand":true}).toHtml();
+		TWITTER_LAST = json[0].id;
 
-		if(type == TYPE.TWITTER) { 
-			TWITTER_LAST = json[0].id;
-		}
-		else {
-			WASSR_LAST = json[0].id;
-		}
 		if(info.notifiers.length > 0) {
 			notifyReplies(info.notifiers.join(","));
 		}
@@ -272,7 +198,6 @@ function postMessage() {
 	var text = $("#input_text").val();
 	if(text != "") {
 		_postMessage(TWITTER_POST_API , text , CONFIG.id , CONFIG.password , true);
-		_postMessage(WASSR_POST_API   , text , CONFIG.id , CONFIG.password , false);
 	}
 
 	$("#input_text").val("");
@@ -307,13 +232,10 @@ function notifyMessage(message , interval) {
 	})() , interval);
 }
 function notifyReplies(msg) {
-
-
-	var options = new air.NativeWindowInitOptions(); 
+    var options = new air.NativeWindowInitOptions(); 
     options.transparent = false; 
     options.systemChrome = air.NativeWindowSystemChrome.STANDARD; 
     options.type = air.NativeWindowType.NORMAL; 
-     
     //create the window 
     var newWindow = new air.NativeWindow(options); 
     newWindow.title = "reply";
@@ -322,21 +244,21 @@ function notifyReplies(msg) {
     newWindow.x = 0;
     newWindow.y = 0;
 
- 	var button = new air.TextField();
+   	var button = new air.TextField();
     button.text = "reply from " + msg;
     button.width = 100;
     button.height = 30;
-	button.autoSize = air.TextFieldAutoSize.LEFT;
-	button.border = true;
-	button.backgroundColor = "0xFF0000";
-	newWindow.stage.addChild(button);
+  	button.autoSize = air.TextFieldAutoSize.LEFT;
+    button.border = true;
+    button.backgroundColor = "0xFF0000";
+    newWindow.stage.addChild(button);
 
 
     //activate and show the new window 
     newWindow.activate();
-	newWindow.alwaysInFront = true;
+    newWindow.alwaysInFront = true;
 
-	return;
+    return;
 
 
 	var title   = "notifyReplies";
@@ -396,16 +318,6 @@ function notifyReplies(msg) {
 	win.alwaysInFront = true;
 	loader.loadString(buf);
 
-	/*
-	loader.contentLoaderInfo.addEventListener(air.Event.COMPLETE, 
-			function (event) {  
-				var contents = win.document.getElementById("contents")
-				alert(contents);
-				contents.innerText = msg;
-			});  
-			*/
-
-
 	setTimeout(function(win){return function(){win.close();}}(win) , 5000);
 }
 function reload_replies() {
@@ -439,14 +351,6 @@ function Tweet(json) {
 	this.image_url   = json.user.profile_image_url;
 	this.favorited   = json.favorited
 }
-function Wass(json) {
-	this.type        = TYPE.WASSR;
-	this.id          = json.id;
-	this.text        = json.text;
-	this.screen_name = json.user_login_id;
-	this.image_url   = json.user.profile_image_url;
-	this.favorited   = json.favorited
-}
 function Table(list , option) {
 	this.list   = list;
 	this.option = ((option == undefined || option == null) ? {} : option);
@@ -457,7 +361,6 @@ function Table(list , option) {
 		var flg   = true;
 		var notify_user_name = [];
 		for(var i = 0 ; i < this.list.length ; i ++) {
-		//for(var i = this.list.length - 1 ; i >= 0; i --) {
 			var tweet = this.list[i];
 			var news = false;
 			if(TWITTER_LAST < tweet.id) {
@@ -466,14 +369,12 @@ function Table(list , option) {
 			}
 			else {
 				if(flg) {
-					//buf += "<hr>";
 					flg = false;
 				}
 			}
 
 			var text = tweet.text;
 
-			//text=text.replace(/&/g,'&amp;');
 			text=text.replace(/>/g,'&gt;');
 			text=text.replace(/</g,'&lt;');
 			text=text.replace(/(http:\/\/[a-zA-Z0-9\.\/\?_\-&]*)/ , 
@@ -502,26 +403,20 @@ function Table(list , option) {
 						+ " id='" + tweet.screen_name + "' style='cursor:pointer;'>"
 				+ "</img>"
 				+ "</td>" 
-				//+ "<td valign='top' rowspan=2>"
 				+ "<td valign='top' >"
 				+ "<span style='color:blue;font-weight:bold;'>"
-				+ "<a name='user_name' href='javascript:void(0)' style='font-size:10pt;" + (news ? "background-color:orange" : "")  + "'>" 
+				+ "<a name='user_name' href='javascript:void(0)' style='font-size:10pt;" 
+				+ (news ? "background-color:orange" : "")  
+				+ "'>" 
 				+ tweet.screen_name 
 				+ "</a>"
 				+ "</span>"
 				+ "&nbsp;"
-				+ "<span style='font-size:10.5pt;line-height:140%;word-break:break-all;'>" + text + "</span>"
-				// + " - " + json.created_at
+				+ "<span style='font-size:10.5pt;line-height:140%;word-break:break-all;'>"
+				+ text 
+				+ "</span>"
 				+ "</td>"
 				+ "</tr>"
-				/*
-				+ "<tr><td valign='top'>"
-				+ (tweet.favorited ? 
-						"<img name='favorite'       msgid='" + tweet.id + "' src=image/favorite.gif width='15' height='15'>" : 
-						"<img name='favorite_empty' msgid='" + tweet.id + "' src=image/favorite_empty.gif width='15' height='15'>")
-				+ (tweet.type == TYPE.WASSR ? "<img src='image/wassr.png'>" : "") 
-				+ "</td></tr>"
-				*/
 				+"</table>";
 
 		}
