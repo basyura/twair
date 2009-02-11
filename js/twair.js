@@ -404,7 +404,7 @@ function Table(list , option) {
 			}
 
 			buf += "<table id='" + this.option.id + "' ";
-			if(text.indexOf("@" + CONFIG.id) != -1) {
+			if(text.indexOf("@" + CONFIG.username) != -1) {
 				if(news) {
 					notify_user_name.push(tweet.screen_name);
 				}
