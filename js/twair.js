@@ -420,7 +420,7 @@ function Table(list , option) {
 				+ "</img>"
 				+ "</td>" 
 				+ "<td valign='top' >"
-				+ "<span style='color:blue;font-weight:bold;'>"
+				+ "<span>"
 				+ "<a class='" + (news ? "user_link_expand" : "user_link") + "' name='user_name' href='javascript:void(0)' style='font-size:10pt;" 
 				+ (news ? "background-color:orange" : "")  
 				+ "'>" 

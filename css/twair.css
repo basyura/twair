@@ -31,7 +31,7 @@ body {
 	font-size:8pt;
 }	
 #main{
-	height:90%;
+	height:95%;
 }
 #contents {
 	height:100%;
@@ -75,4 +75,5 @@ body {
 }
 .user_link_expand {
 	color:#0000FF;
+	font-weight:bold;
 }
