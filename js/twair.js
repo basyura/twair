@@ -148,7 +148,7 @@ function load(text , type) {
 		if(info.html == "" || info.html == null) {
 			return;
 		}
-		document.title = "TwittAir - new " + info.count + " messages"
+		document.title = "Twair - new " + info.count + " messages"
 		$("#contents").html(info.html);
 		attach_event();
 		$("#contents").attr("scrollTop" , 0);
@@ -175,29 +175,32 @@ function attach_event() {
 		if(list[i].name == "img_link") {
 			list[i].onclick = function(url){
 				return function(){openURL(url);}
-			}("http://twitter.com/" + list[i].id);
-		}
-		else if(list[i].name == "favorite_empty") {
-			list[i].onclick = function(msgid) {return function() {
-				if(!confirm("create favorite ?")) {
-					return;
-				}
-				$.ajax({
-					type:     "POST",
-					url:      TWITTER_FAVORITE_API + msgid + ".json",
-					dataType: "text",
-					msgid:    msgid,
-					complete: function(request , status) {
-						for(var k = 0 ; k < CACHE.length ; k ++) {
-							if(CACHE[k].id == this.msgid) {
-								CACHE[k].favorited = true;
-								alert(request.responseText);
-								break;
+			}("http://twitter.com/" + list[i].getAttribute("screen_name"));
+			list[i].oncontextmenu = function(url){
+				event.preventDefault(); 
+				var menu = new air.NativeMenu(); 
+				var command = menu.addItem(new air.NativeMenuItem("fav")); 
+				command.addEventListener(air.Event.SELECT, function(){
+					var tweetId = event.srcElement.getAttribute("tweetId");
+					$.ajax({
+						type:     "POST",
+						url:      TWITTER_FAVORITE_API + tweetId + ".json",
+						dataType: "text",
+						data:     "id=" + tweetId,
+						id:       tweetId,
+						complete: function(request , status) {
+							for(var k = 0 ; k < CACHE.length ; k ++) {
+								if(CACHE[k].id == this.id) {
+									CACHE[k].favorited = true;
+									$("#" + this.id + "_img_favorite").css("display","");
+									break;
+								}
 							}
 						}
-					}
-				});
-			}}(list[i].getAttribute("msgid"));
+					});
+				}); 
+				menu.display(window.nativeWindow.stage, event.clientX, event.clientY); 
+			}
 		}
 	}
 }
@@ -366,7 +369,7 @@ function Tweet(json) {
 	this.text        = json.text;
 	this.screen_name = json.user.screen_name;
 	this.image_url   = json.user.profile_image_url;
-	this.favorited   = json.favorited
+	this.favorited   = json.favorited;
 }
 function Table(list , option) {
 	this.list   = list;
@@ -415,9 +418,15 @@ function Table(list , option) {
 			buf += "><tr>"
 				+ "<td valign='top'>"
 				+ "<img name='img_link' " 
+				        + " id='" + tweet.id + "_img'"
 						+ " src='" + tweet.image_url + "' width='30' height='30'" 
-						+ " id='" + tweet.screen_name + "' style='cursor:pointer;'>"
+						+ " tweetId='" + tweet.id + "' style='cursor:pointer;'"
+						+ " screen_name='" + tweet.screen_name + "' style='cursor:pointer;'"
+						+ ">"
 				+ "</img>"
+				+ "<br>"
+				+ "<img id='" + tweet.id  + "_img_favorite' src='image/favorite.gif' " 
+				+ (tweet.favorited ? "" : "style='display:none'>")
 				+ "</td>" 
 				+ "<td valign='top' >"
 				+ "<span>"
