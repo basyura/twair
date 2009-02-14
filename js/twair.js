@@ -185,10 +185,10 @@ function attach_event() {
 					$.ajax({
 						type:     "POST",
 						url:      TWITTER_FAVORITE_API + tweetId + ".json",
-						dataType: "text",
+						dataType: "json",
 						data:     "id=" + tweetId,
 						id:       tweetId,
-						complete: function(request , status) {
+						success: function(data, dataType) {
 							for(var k = 0 ; k < CACHE.length ; k ++) {
 								if(CACHE[k].id == this.id) {
 									CACHE[k].favorited = true;
@@ -196,6 +196,9 @@ function attach_event() {
 									break;
 								}
 							}
+						},
+						error: function(request , status , errorThrown) {
+							alert("failed");
 						}
 					});
 				}); 
