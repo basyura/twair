@@ -37,6 +37,7 @@ function initialize() {
 				alert(e);
 			}
 		}); 
+			notifyReplies("aaaaaaaaaaaaaa");
 		show_login_form();
 	} catch(e) {
 		alert(e.message);
@@ -260,24 +261,34 @@ function notifyReplies(msg) {
     var options = new air.NativeWindowInitOptions(); 
     options.transparent = false; 
     options.systemChrome = air.NativeWindowSystemChrome.STANDARD; 
-    options.type = air.NativeWindowType.NORMAL; 
+//    options.type = air.NativeWindowType.NORMAL; 
+//		options.type = air.NativeWindowType.UTILITY 
+//		options.transparent = false; 
+	//	options.resizable = false; 
+//		options.maximizable = false;
     //create the window 
     var newWindow = new air.NativeWindow(options); 
     newWindow.title = "reply";
     newWindow.width = 300
-    newWindow.height =150; 
+    newWindow.height =50; 
     newWindow.x = 0;
     newWindow.y = 0;
 
-   	var button = new air.TextField();
-    button.text = "reply from " + msg;
-    button.width = 100;
-    button.height = 30;
-  	button.autoSize = air.TextFieldAutoSize.LEFT;
-    button.border = true;
-    button.backgroundColor = "0xFF0000";
-    newWindow.stage.addChild(button);
-
+   	var text = new air.TextField();
+    text.text = "reply from " + msg;
+  //  text.x = 0;
+//    text.y = 0;
+    text.width = 300;
+    //text.height =150;
+//  	text.autoSize = air.TextFieldAutoSize.LEFT;
+//    text.border = true;
+  //  text.backgroundColor = "0xFF0000";
+    var format = new air.TextFormat();
+    format.size = 30;     //フォントサイズ
+    text.setTextFormat(format);
+    newWindow.stage.addChild(text);
+    newWindow.stage.scaleMode = air.StageScaleMode.NO_SCALE;
+		newWindow.stage.align = air.StageAlign.TOP_LEFT
 
     //activate and show the new window 
     newWindow.activate();

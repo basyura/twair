@@ -65,6 +65,7 @@ if (window.runtime)
     
     // native window
     air.NativeWindow = window.runtime.flash.display.NativeWindow;
+		air.StageScaleMode = window.runtime.flash.display.StageScaleMode;
     air.NativeWindowDisplayState = window.runtime.flash.display.NativeWindowDisplayState;
     air.NativeWindowInitOptions = window.runtime.flash.display.NativeWindowInitOptions;
     air.NativeWindowSystemChrome = window.runtime.flash.display.NativeWindowSystemChrome;
@@ -135,8 +136,11 @@ if (window.runtime)
     air.Bitmap = window.runtime.flash.display.Bitmap;
     air.BitmapData = window.runtime.flash.display.BitmapData;
 	
-	air.TextFieldAutoSize = window.runtime.flash.text.TextFieldAutoSize;
-	air.TextField = window.runtime.flash.text.TextField;
+		air.TextFieldAutoSize = window.runtime.flash.text.TextFieldAutoSize;
+		air.TextFieldType = window.runtime.flash.text.TextFieldType;
+		air.TextField = window.runtime.flash.text.TextField;
+		air.TextFormat = window.runtime.flash.text.TextFormat;
+		air.StageAlign = window.runtime.flash.display.StageAlign;
 
 
 
