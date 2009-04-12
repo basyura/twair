@@ -9,7 +9,7 @@ var TYPE = {"TWITTER":0};
 var CONFIG = null;
 var FRIENDS_TIMELINE_API = 'http://twitter.com/statuses/friends_timeline.json';
 var TWITTER_POST_API     = 'http://twitter.com/statuses/update.json';
-var TWITTER_REPLIES_API  = "http://twitter.com/statuses/replies.json";
+var TWITTER_REPLIES_API  = "http://twitter.com/statuses/mentions.json";
 var TWITTER_FAVORITE_API = "http://twitter.com/favourings/create/";
 
 var CACHE = [];
@@ -37,7 +37,6 @@ function initialize() {
 				alert(e);
 			}
 		}); 
-			notifyReplies("aaaaaaaaaaaaaa");
 		show_login_form();
 	} catch(e) {
 		alert(e.message);
@@ -261,28 +260,17 @@ function notifyReplies(msg) {
     var options = new air.NativeWindowInitOptions(); 
     options.transparent = false; 
     options.systemChrome = air.NativeWindowSystemChrome.STANDARD; 
-//    options.type = air.NativeWindowType.NORMAL; 
-//		options.type = air.NativeWindowType.UTILITY 
-//		options.transparent = false; 
-	//	options.resizable = false; 
-//		options.maximizable = false;
-    //create the window 
     var newWindow = new air.NativeWindow(options); 
-    newWindow.title = "reply";
-    newWindow.width = 300
-    newWindow.height =50; 
-    newWindow.x = 0;
-    newWindow.y = 0;
+    newWindow.title  = "reply";
+    newWindow.width  = 300
+    newWindow.height = 50; 
+		newWindow.x = 0;
+		newWindow.y = 0;
 
    	var text = new air.TextField();
     text.text = "reply from " + msg;
-  //  text.x = 0;
-//    text.y = 0;
     text.width = 300;
-    //text.height =150;
-//  	text.autoSize = air.TextFieldAutoSize.LEFT;
-//    text.border = true;
-  //  text.backgroundColor = "0xFF0000";
+
     var format = new air.TextFormat();
     format.size = 30;     //フォントサイズ
     text.setTextFormat(format);
@@ -293,72 +281,10 @@ function notifyReplies(msg) {
     //activate and show the new window 
     newWindow.activate();
     newWindow.alwaysInFront = true;
-
-    return;
-
-
-	var title   = "notifyReplies";
-	var text    = msg;
-	var timeout = 5;
-	/*
-	var img     = undefined;
-	var n = new runtime.com.adobe.air.notification.Notification(title, text, null, timeout,img);
-	n.addEventListener(	runtime.com.adobe.air.notification.NotificationEvent.NOTIFICATION_CLICKED_EVENT, function(evt){ winmgr.restore(); });
-		
-    n.width = 250;
-//	purr.addNotification(n);
-
-	return;
-	*/
-
-	var option = new air.NativeWindowInitOptions();
-   	option.systemChrome = air.NativeWindowSystemChrome.NONE;
-	option.type = "lightweight";
-
-	var screen_widh   = window.nativeWindow.stage.fullScreenWidth;
-	var screen_height = window.nativeWindow.stage.fullScreenHeight;
-	var width  = 200;
-	var height = 20;
-
-	/*
-	var win = new air.NativeWindow(option);
-	win.width  = 200;
-    win.height = 100;
-	win.x = screen_widh   - win.width;
-	win.y = screen_height - win.height - 30;
-	var loader = new air.HTMLLoader(); 
-	win.stage.align = "TL"; 
-	win.stage.scaleMode = "noScale"; 
-	win.stage.addChild(loader);
-	win.alwaysInFront = true;
-
-	win.activate();
-	loader.loadString(buf);
-	*/
-	
-
-
-	//var buf = "<div background='image/bg.gif' style='border:2px solid #0080FF'>" + msg + "</div>"
-
-	var buf = "<html>"
-			  + "<body background='image/bg.gif' style='border:2px solid #0080FF'>"
-			  + "<table style='width:100%;height:100%'><tr><td valign=middle align=center>"
-			  + "<span id='msg' style='font-size:10pt;'>reply from " + msg + "</span>"
-			  + "</td></tr></table>"
-			  + "</body>"
-			  + "</html>"
-
-	var windowBounds = new air.Rectangle(screen_widh - width , screen_height - height - 50 , width , height); 
-	var loader = air.HTMLLoader.createRootWindow(true, option, true, windowBounds); 
-	var win = loader.window;
-	win.alwaysInFront = true;
-	loader.loadString(buf);
-
-	setTimeout(function(win){return function(){win.close();}}(win) , 5000);
 }
 function reload_replies() {
 	$.ajax({
-		type:     "POST",
+		type:     "GET",
 		url:      TWITTER_REPLIES_API,
 		data:     "page=1",
 		dataType: "text",
