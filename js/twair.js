@@ -244,7 +244,7 @@ function postMessage() {
 			dataType: "text",
 			isReload: isReload,
 			complete: function(request , status) {
-				reload(this.isReload);
+				reload_twitter();
 			}
 		});
 	}
