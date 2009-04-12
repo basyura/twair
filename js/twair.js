@@ -7,10 +7,11 @@ var LOG_LIMIT    = 100;
 
 var TYPE = {"TWITTER":0};
 var CONFIG = null;
-var FRIENDS_TIMELINE_API = 'http://twitter.com/statuses/friends_timeline.json';
-var TWITTER_POST_API     = 'http://twitter.com/statuses/update.json';
-var TWITTER_REPLIES_API  = "http://twitter.com/statuses/mentions.json";
-var TWITTER_FAVORITE_API = "http://twitter.com/favourings/create/";
+var FRIENDS_TIMELINE_API   = 'http://twitter.com/statuses/friends_timeline.json';
+var TWITTER_POST_API       = 'http://twitter.com/statuses/update.json';
+var TWITTER_REPLIES_API    = "http://twitter.com/statuses/mentions.json";
+var TWITTER_FAVORITE_API   = "http://twitter.com/favourings/create/";
+var TWITTER_RATE_LIMIT_API = "http://twitter.com/account/rate_limit_status.json"
 
 var CACHE = [];
 
@@ -78,7 +79,7 @@ function logined_process(username , password) {
 	}
 	$.modal.close();
 	reload();
-	setInterval(function(){reload()} , 60 * 1000);
+	setInterval(function(){reload_twitter()} , 60 * 1000);
 	setInterval(function(){reload_replies()} , 5 * 60 * 1000);
 }
 function loadConfig() {
@@ -119,10 +120,15 @@ function reload_twitter(flg) {
 		type:     "POST",
 		url:      FRIENDS_TIMELINE_API,
 		dataType: "text",
-		complete: function(request , status) {
-			load(request.responseText , TYPE.TWITTER);
+		success: function(data , dataType) {
+			load(data , TYPE.TWITTER);
+		},
+		error: function(request, textStatus, errorThrown){
+			var json = eval("(" + request.responseText + ")");
+			notifyMessage(json.error);
 		}
 	});
+	reload_api_count();
 }
 function load(text , type) {
 	try {
@@ -148,7 +154,7 @@ function load(text , type) {
 		if(info.html == "" || info.html == null) {
 			return;
 		}
-		document.title = "Twair - new " + info.count + " messages"
+		//document.title = "Twair - new " + info.count + " messages"
 		$("#contents").html(info.html);
 		attach_event();
 		$("#contents").attr("scrollTop" , 0);
@@ -288,8 +294,8 @@ function reload_replies() {
 		url:      TWITTER_REPLIES_API,
 		data:     "page=1",
 		dataType: "text",
-		complete: function(request , status) {
-			var json = eval(request.responseText);
+		success: function(data , dataType) {
+			var json = eval(data);
 			var list = [];
 			for(var i = 0 ; i < json.length ; i ++) {
 				list.push(new Tweet(json[i]));
@@ -297,6 +303,17 @@ function reload_replies() {
 			var info = new Table(list , {"id":"table_replies" , "expand":false}).toHtml();
 			$("#replies").html(info.html);
 			attach_event();
+		}
+	});
+}
+function reload_api_count() {
+	$.ajax({
+		type:     "GET",
+		url:      TWITTER_RATE_LIMIT_API,
+		dataType: "text",
+		complete: function(request , status) {
+			var json = eval("(" + request.responseText + ")");
+			document.title = "twair - " + json.remaining_hits + "/" + json.hourly_limit;
 		}
 	});
 }
